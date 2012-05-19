@@ -1,6 +1,7 @@
 #pragma once
 
 //basic types
+#ifdef WIN32
 typedef signed __int8  s8;
 typedef signed __int16 s16;
 typedef signed __int32 s32;
@@ -10,19 +11,31 @@ typedef unsigned __int8  u8;
 typedef unsigned __int16 u16;
 typedef unsigned __int32 u32;
 typedef unsigned __int64 u64;
+#else
+#include <stdint.h>
+typedef int8_t s8;
+typedef int16_t s16;
+typedef int32_t s32;
+typedef int64_t s64;
+
+typedef uint8_t u8;
+typedef uint16_t u16;
+typedef uint32_t u32;
+typedef uint64_t u64;
+#endif
 
 typedef float f32;
 typedef double f64;
 
-#ifdef X86
+#if defined(i386) || defined(X86) || defined(_X86_)
 typedef u32 unat;
 #endif
 
-#ifdef X64
+#if defined(__x86_64__) || defined(_M_X64) || defined(X64)
 typedef u64 unat;
 #endif
 
-
+#ifdef WIN32
 //Do not complain when i use enum::member
 #pragma warning( disable : 4482)
 
@@ -31,16 +44,22 @@ typedef u64 unat;
 
 //unused parameters
 #pragma warning( disable : 4100)
+#endif // WIN32
 
 //basic includes from runtime lib
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include <vector>
 using namespace std;
 
 #ifndef dbgbreak
+#ifdef WIN32
 #define dbgbreak __asm {int 3}
+#else
+#define dbgbreak asm("")
+#endif // WIN32
 #endif
 
 #ifndef verify

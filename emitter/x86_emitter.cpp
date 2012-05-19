@@ -1,7 +1,10 @@
+// kate: replace-tabs false;
 //Emitting code ;)
+#ifdef WIN32
 #pragma warning(disable:4127)
 #pragma warning(disable:4244)
 #pragma warning(disable:4245)
+#endif
 
 #include "x86_emitter.h"
 bool IsS8(u32 value)
@@ -24,11 +27,15 @@ x86_ptr x86_ptr::create(void* ptr)
 }*/
 x86_ptr x86_ptr::create(unat ptr)
 {
+#ifdef WIN32
 #pragma warning(disable:4312)
+#endif
 	x86_ptr rv(0);
 	rv.ptr_int=ptr;
 	return rv;
-#pragma warning(default:4312) 
+#ifdef WIN32
+#pragma warning(disable:4312)
+#endif
 }
 /*
 x86_ptr_imm x86_ptr_imm::create(void* ptr)
@@ -38,11 +45,15 @@ x86_ptr_imm x86_ptr_imm::create(void* ptr)
 }*/
 x86_ptr_imm x86_ptr_imm::create(unat ptr)
 {
-#pragma warning(disable:4312) 
+#ifdef WIN32
+#pragma warning(disable:4312)
+#endif
 	x86_ptr_imm rv(0);
 	rv.ptr_int=ptr;
 	return rv;
-#pragma warning(default:4312) 
+#ifdef WIN32
+#pragma warning(disable:4312)
+#endif
 }
 //x86_block
 //init things
@@ -62,11 +73,11 @@ void* x86_Label::GetPtr()
 
 const char* DissasmClass(x86_opcode_class opcode)
 {
-	#ifdef X86_OP_NAMES
+#ifdef X86_OP_NAMES
 	return Names[opcode];
-	#else
+#else
 	return "No opcode name info included";
-	#endif
+#endif
 }
 void x86_block::Init(dyna_reallocFP* ral,dyna_finalizeFP* alf)
 {
@@ -183,7 +194,9 @@ x86_block_externs* x86_block::GetExterns()
 
 	return rv;
 }
+#ifdef WIN32
 #include "windows.h"
+#endif
 /*void x86_block::CopyTo(void* to)
 {
 	memcpy(to,x86_buff,x86_indx);
@@ -409,7 +422,8 @@ void x86_block::Emit(x86_opcode_class op,x86_reg reg1,x86_reg reg2,u32 imm)
 //reg,mrm,imm	,reg1 is writen
 void x86_block::Emit(x86_opcode_class op,x86_reg reg,x86_ptr mem,u32 imm)
 {
-	ME_op_3_imm(op,reg,c_mrm(mem),imm);
+	x86_mrm_t mem2 = c_mrm(mem);
+	ME_op_3_imm(op,reg,&mem2,imm);
 }
 
 //reg,mrm,imm	,reg1 is writen
@@ -449,6 +463,7 @@ u8 EncodeDisp(u32 disp,x86_mrm_t* to,u8 flags)
 	verify(false);
 	return 0;
 }
+#ifdef WIN32
 __declspec(dllexport) x86_mrm_t x86_mrm(x86_reg base)
 {
 	return x86_mrm(base,NO_REG,sib_scale_1,0);
@@ -465,6 +480,24 @@ __declspec(dllexport) x86_mrm_t x86_mrm(x86_reg base,x86_reg index)
 {
 	return x86_mrm(base,index,sib_scale_1,0);
 }
+#else
+x86_mrm_t x86_mrm(x86_reg base)
+{
+	return x86_mrm(base,NO_REG,sib_scale_1,0);
+}
+x86_mrm_t x86_mrm(x86_reg base,x86_ptr disp)
+{
+	return x86_mrm(base,NO_REG,sib_scale_1,disp);
+}
+x86_mrm_t x86_mrm(x86_reg index,x86_sib_scale scale,x86_ptr disp)
+{
+	return x86_mrm(NO_REG,index,scale,disp);
+}
+x86_mrm_t x86_mrm(x86_reg base,x86_reg index)
+{
+	return x86_mrm(base,index,sib_scale_1,0);
+}
+#endif
 
 //NEEDS WORK
 x86_mrm_t x86_mrm(x86_reg base,x86_reg index,x86_sib_scale scale,x86_ptr disp)
@@ -472,7 +505,7 @@ x86_mrm_t x86_mrm(x86_reg base,x86_reg index,x86_sib_scale scale,x86_ptr disp)
 	x86_mrm_t rv;
 	rv.flags=0;
 
-#ifdef X64
+#if defined(X64) || defined(__x86_64__)
 	if (base!=NO_REG && base>EDI)
 	{
 		rv.flags|=((base>>3)&1)<<2;

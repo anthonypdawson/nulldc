@@ -20,7 +20,11 @@ enum x86_op_params
 
 encoded_type pg_none = {pg_NONE};
 
+#ifdef WIN32
 encoded_type __fastcall param_type(x86_Label* lbl)
+#else
+encoded_type param_type(x86_Label* lbl)
+#endif
 {
 	encoded_type rv;
 	//Return pg_MEM_Rel32/pg_MEM_Rel16/pg_MEM_Rel8
@@ -33,7 +37,11 @@ encoded_type __fastcall param_type(x86_Label* lbl)
 	rv.ptr_type=1;
 	return rv;
 }
+#ifdef WIN32
 encoded_type __fastcall param_type(x86_ptr_imm ptr)
+#else
+encoded_type param_type(x86_ptr_imm ptr)
+#endif
 {
 	encoded_type rv;
 	//Return pg_MEM_Rel32.Due to relocation we cant optimise to 16/8 in one pass ...
@@ -43,7 +51,11 @@ encoded_type __fastcall param_type(x86_ptr_imm ptr)
 	rv.ptr_type=0;
 	return rv;
 }
+#ifdef WIN32
 encoded_type __fastcall param_type(x86_mrm_t& modrm)
+#else
+encoded_type param_type(x86_mrm_t& modrm)
+#endif
 {
 	encoded_type rv;
 	rv.modrm=modrm;
@@ -51,7 +63,11 @@ encoded_type __fastcall param_type(x86_mrm_t& modrm)
 	rv.type=pg_ModRM;
 	return rv;
 }
+#ifdef WIN32
 encoded_type __fastcall param_type(x86_reg reg)
+#else
+encoded_type param_type(x86_reg reg)
+#endif
 {
 	encoded_type rv;
 	rv.reg=reg;
@@ -65,7 +81,11 @@ encoded_type __fastcall param_type(x86_reg reg)
 	return rv;
 }
 
+#ifdef WIN32
 encoded_type __fastcall param_type(u32 imm)
+#else
+encoded_type param_type(u32 imm)
+#endif
 {
 	encoded_type rv;
 	rv.imm=imm;
@@ -82,7 +102,11 @@ encoded_type __fastcall param_type(u32 imm)
 
 	return rv;
 }
+#ifdef WIN32
 void __fastcall Match_opcode(x86_block* block,const x86_opcode* ops,encoded_type pg1,encoded_type pg2,encoded_type pg3)
+#else
+void Match_opcode(x86_block* block,const x86_opcode* ops,encoded_type pg1,encoded_type pg2,encoded_type pg3)
+#endif
 {
 	const x86_opcode* match=0;
 	for (u32 i=0;ops[i].encode!=0;i++)

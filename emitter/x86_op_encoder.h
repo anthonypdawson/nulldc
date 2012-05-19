@@ -58,7 +58,9 @@
 	}
 */
 
-
+#ifdef __x86_64__
+#define X64 1
+#endif
 
 enum enc_param
 {
@@ -168,7 +170,11 @@ struct encoded_type
 
 struct x86_opcode;
 
+#ifdef WIN32
 typedef void __fastcall x86_opcode_encoderFP(x86_block* block,const x86_opcode* op,encoded_type* p1,encoded_type* p2,u32 p3);
+#else
+typedef void x86_opcode_encoderFP(x86_block* block,const x86_opcode* op,encoded_type* p1,encoded_type* p2,u32 p3);
+#endif
 
 //enc_param_none is alower w/ params set to implicit registers (ie , mov eax,xxxx is enc_imm , pg1:pg_EAX , pg2:pg_imm
 
@@ -185,7 +191,11 @@ struct x86_opcode
 };
 
 //mod|reg|rm
+#ifdef WIN32
 void __fastcall encode_modrm(x86_block* block,encoded_type* mrm, u32 extra)
+#else
+void encode_modrm(x86_block* block,encoded_type* mrm, u32 extra)
+#endif
 {
 	if (mrm->type != pg_ModRM)
 	{
@@ -206,9 +216,13 @@ void __fastcall encode_modrm(x86_block* block,encoded_type* mrm, u32 extra)
 			block->write32(modr->disp);
 	}
 }
-#ifdef X64
+#if defined(X64) || defined(__x86_64__)
 //x64 stuff
+#ifdef WIN32
 void __fastcall encode_rex(x86_block* block,encoded_type* mrm,u32 mrm_reg,u32 ofe=0)
+#else
+void encode_rex(x86_block* block,encoded_type* mrm,u32 mrm_reg,u32 ofe=0)
+#endif
 {
 	u32 flags = (ofe>>3) & 1; //opcode field extention
 
@@ -227,12 +241,16 @@ void __fastcall encode_rex(x86_block* block,encoded_type* mrm,u32 mrm_reg,u32 of
 		block->write8(0x40|flags);
 	}
 }
-#endif
+#endif // defined X64 or __x86_64__
 #define block_patches (*(vector<code_patch>*) block->_patches)
 
 //Encoding function (partialy) specialised by templates to gain speed :)
 template < enc_param enc_1,enc_imm enc_2,u32 sz,x86_operand_size enc_op_size>
+#ifdef WIN32
 void __fastcall x86_encode_opcode_tmpl(x86_block* block, const x86_opcode* op, encoded_type* p1,encoded_type* p2,u32 p3)
+#else
+void x86_encode_opcode_tmpl(x86_block* block, const x86_opcode* op, encoded_type* p1,encoded_type* p2,u32 p3)
+#endif
 {
 	//printf("Encoding : ");
 
