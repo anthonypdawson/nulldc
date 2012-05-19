@@ -2,10 +2,6 @@
 #include "types.h"
 #include "x86_op_classes.h"
 
-#ifdef __x86_64__
-#define X64 1
-#endif
-
 using namespace std;
 //Oh god , x86 is a sooo badly designed opcode arch -_-
 

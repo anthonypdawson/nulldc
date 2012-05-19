@@ -23,6 +23,7 @@ encoded_type pg_none = {pg_NONE};
 #ifdef WIN32
 encoded_type __fastcall param_type(x86_Label* lbl)
 #else
+encoded_type param_type(x86_Label* lbl) __attribute((fastcall));
 encoded_type param_type(x86_Label* lbl)
 #endif
 {
@@ -40,6 +41,7 @@ encoded_type param_type(x86_Label* lbl)
 #ifdef WIN32
 encoded_type __fastcall param_type(x86_ptr_imm ptr)
 #else
+encoded_type param_type(x86_ptr_imm ptr) __attribute((fastcall));
 encoded_type param_type(x86_ptr_imm ptr)
 #endif
 {
@@ -54,6 +56,7 @@ encoded_type param_type(x86_ptr_imm ptr)
 #ifdef WIN32
 encoded_type __fastcall param_type(x86_mrm_t& modrm)
 #else
+encoded_type param_type(x86_mrm_t& modrm) __attribute__((fastcall));
 encoded_type param_type(x86_mrm_t& modrm)
 #endif
 {
@@ -66,6 +69,7 @@ encoded_type param_type(x86_mrm_t& modrm)
 #ifdef WIN32
 encoded_type __fastcall param_type(x86_reg reg)
 #else
+encoded_type param_type(x86_reg reg) __attribute__((fastcall));
 encoded_type param_type(x86_reg reg)
 #endif
 {
@@ -84,6 +88,7 @@ encoded_type param_type(x86_reg reg)
 #ifdef WIN32
 encoded_type __fastcall param_type(u32 imm)
 #else
+encoded_type param_type(u32 imm) __attribute__((fastcall));
 encoded_type param_type(u32 imm)
 #endif
 {
@@ -105,6 +110,7 @@ encoded_type param_type(u32 imm)
 #ifdef WIN32
 void __fastcall Match_opcode(x86_block* block,const x86_opcode* ops,encoded_type pg1,encoded_type pg2,encoded_type pg3)
 #else
+void Match_opcode(x86_block* block,const x86_opcode* ops,encoded_type pg1,encoded_type pg2,encoded_type pg3) __attribute__((fastcall));
 void Match_opcode(x86_block* block,const x86_opcode* ops,encoded_type pg1,encoded_type pg2,encoded_type pg3)
 #endif
 {

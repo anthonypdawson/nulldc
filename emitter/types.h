@@ -27,11 +27,19 @@ typedef uint64_t u64;
 typedef float f32;
 typedef double f64;
 
-#if defined(i386) || defined(X86) || defined(_X86_)
+#ifdef __x86_64__
+#define X64 1
+#endif
+
+#if defined(i386) || defined(_X86_)
+#define X86 1
+#endif
+
+#ifdef X86
 typedef u32 unat;
 #endif
 
-#if defined(__x86_64__) || defined(_M_X64) || defined(X64)
+#ifdef X64
 typedef u64 unat;
 #endif
 
@@ -49,7 +57,7 @@ typedef u64 unat;
 //basic includes from runtime lib
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
+#include <string.h> // for memset()
 
 #include <vector>
 using namespace std;
@@ -58,7 +66,8 @@ using namespace std;
 #ifdef WIN32
 #define dbgbreak __asm {int 3}
 #else
-#define dbgbreak asm("")
+#include <signal.h>
+#define dbgbreak raise(SIGTRAP);
 #endif // WIN32
 #endif
 

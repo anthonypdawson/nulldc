@@ -58,10 +58,6 @@
 	}
 */
 
-#ifdef __x86_64__
-#define X64 1
-#endif
-
 enum enc_param
 {
 	enc_param_none =0,
@@ -194,6 +190,7 @@ struct x86_opcode
 #ifdef WIN32
 void __fastcall encode_modrm(x86_block* block,encoded_type* mrm, u32 extra)
 #else
+void encode_modrm(x86_block* block,encoded_type* mrm, u32 extra) __attribute__((fastcall));
 void encode_modrm(x86_block* block,encoded_type* mrm, u32 extra)
 #endif
 {
